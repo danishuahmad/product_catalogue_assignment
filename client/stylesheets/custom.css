@@ -1,0 +1,14 @@
+.price-tag{
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    background: #0067B0;
+    color: white;
+    text-align: center;
+    font-size: 35px;
+    cursor: pointer;
+}
+.product{
+    min-height: 250px;
+}
