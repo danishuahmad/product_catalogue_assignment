@@ -15,7 +15,7 @@ class ProductCard extends React.Component{
 							</time>
 						</div>
 						<div className="media">
-							<div className="media-content has-text-centered">
+							<div className="media-content has-text-centered is-clipped">
 								<p className="title" style={{'fontSize':`${size}px`}}>
 									{face}
 								</p>
