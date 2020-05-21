@@ -4,6 +4,7 @@ import ProductCard from './ProductCard';
 import EndOfContent from './EndOfContent';
 import Progress from '../Modals/Progress';
 import IdleMonitor from '../General/IdleMonitor';
+import Advertisement from '../General/Advertisement';
 
 class Products extends React.Component{
 	constructor(props){
@@ -14,13 +15,14 @@ class Products extends React.Component{
 			current_page_index: 1,
 			sort_by: '',
 			ent_of_content: false,
-			loading:false
+			loading:false,
 		};
+		this.ADVERTISEMENT_REPETITION_FREQUENCY = 20;
 	}
 
 	getProducts = (save_products = false) => {
 		let {products,next_page_products,current_page_index,sort_by,end_of_content,loading,} = this.state;
-		if( !end_of_content && !loading ){
+		if( !end_of_content && !loading ){	//	don't fetch if already loading or content ended already
 			this.setState({loading:true},()=>{
 				getProducts(current_page_index,sort_by).then( response => {
 					if( response.success ){
@@ -32,9 +34,7 @@ class Products extends React.Component{
 						
 						end_of_content = response.end_of_content;
 					}
-					this.setState({products,next_page_products,end_of_content,loading:false,current_page_index:current_page_index+1},()=>{
-						console.log("done",this.state)
-					});
+					this.setState({products,next_page_products,end_of_content,loading:false,current_page_index:current_page_index+1});
 				})
 				
 			});
@@ -54,7 +54,7 @@ class Products extends React.Component{
 		this.setState({sort_by});
 	};
 	componentDidMount() {
-		this.getProducts();
+		this.getProducts();	//	fetch products
 		window.addEventListener('scroll', this.handleScroll);
 	}
 	componentWillUnmount() {
@@ -70,15 +70,15 @@ class Products extends React.Component{
 		) {	//	check if scrolled to bottom
 			
 			let {next_page_products} = this.state;
-			if( next_page_products.length > 0 ){
+			if( next_page_products.length > 0 ){	//	if there are pre-fetched products show them
 				this.getProductsFromSavedCatalogue();
-			}else{
+			}else{	//	fetch from API
 				this.getProducts();
 			}
 			window.scrollTo(0, scroll_y+inner_height);
 		}
 	};
-	isIdle = () => {
+	isIdle = () => {	//	timed out -> func called
 		let {next_page_products} = this.state;
 		if( next_page_products.length === 0 ){
 			this.getProducts(true);	//	get products but don't show them yet
@@ -89,12 +89,14 @@ class Products extends React.Component{
 		let {products,sort_by,end_of_content,loading} = this.state;
 		return(
 			<IdleMonitor isIdle={this.isIdle}>
+				{/** ENCAPSULATED BY IDLE-TIME-MONITOR COMPONENT **/}
 				<div className="container">
 					<div className="column is-full">
 						<h2 className="title is-1 is-spaced wq-note has-text-centered">
 							Products
 						</h2>
 					</div>
+					{/** FILTERS **/}
 					<div className="column is-full">
 						<h5 className="title is-1 is-spaced wq-note has-text-centered">
 							Filters
@@ -113,10 +115,10 @@ class Products extends React.Component{
 							</form>
 						</div>
 					</div>
+					{/** PRODUCT/ADVERTISEMENT **/}
 					<div className="columns is-multiline" id="product_container">
-						{/** PRODUCT **/}
 						{
-							products.map( (product,index) =>
+							products.map( (product,index) => [
 								<ProductCard
 									key={product.id}
 									index={index}
@@ -125,8 +127,16 @@ class Products extends React.Component{
 									face={product.face}
 									size={product.size}
 									price={product.price}
-								/>
-							)
+								/>,
+								(index % this.ADVERTISEMENT_REPETITION_FREQUENCY === 0) && index > 0 ?
+									<Advertisement
+										index={index} key={`${index}_ad`}
+										repetition_frequency={this.ADVERTISEMENT_REPETITION_FREQUENCY}
+									/>
+								:
+									null
+								
+							])
 						}
 					</div>
 					{/** SHOW PROGRESS BAR WHILE FETCHING PRODUCTS **/}
@@ -134,6 +144,7 @@ class Products extends React.Component{
 					{/** SHOW IF NO MORE PRODUCTS **/}
 					{end_of_content ? <EndOfContent/> : null}
 				</div>
+				
 			</IdleMonitor>
 		)
 	}

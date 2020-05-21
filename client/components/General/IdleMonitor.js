@@ -1,13 +1,14 @@
 import React from 'react';
 
-class Products extends React.Component{
+class IdleMonitor extends React.Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			timeout_id: null
+			timeout_id: null  //	we will store timer id here
 		};
 	}
 	componentDidMount() {
+		//	listen to all events that may suggest an activity by user
 		window.addEventListener("mousemove", this.resetTimer);
 		window.addEventListener("mousedown", this.resetTimer);
 		window.addEventListener("keypress", this.resetTimer);
@@ -18,6 +19,7 @@ class Products extends React.Component{
 		this.startTimer();
 	}
 	componentWillUnmount() {
+		// component/window closing -> stop listening to
 		window.removeEventListener("mousemove", this.resetTimer);
 		window.removeEventListener("mousedown", this.resetTimer);
 		window.removeEventListener("keypress", this.resetTimer);
@@ -26,31 +28,27 @@ class Products extends React.Component{
 		window.removeEventListener("touchmove", this.resetTimer);
 		window.removeEventListener("MSPointerMove", this.resetTimer);
 	}
-	startTimer = () => {
+	startTimer = () => {	//	timer started to check if user is idle
 		this.setState({
 			timeout_id: window.setTimeout(this.isIdle, 7000)
 		});
 	};
-	resetTimer = (e) => {
+	resetTimer = (e) => {	//	some activity done by user
 		let {timeout_id} = this.state;
 		window.clearTimeout(timeout_id);
 		this.isActive();
 	};
-	isIdle = () => {
+	isIdle = () => {	//	timed out -> tell the Interactive Component to do something
 		this.props.isIdle();
 	};
-	isActive = () => {
+	isActive = () => {	//	restart timer -> to listen again after some activity
 		this.startTimer();
 	};
-	render(){
+	render(){	//	render the component it is encapsulating to
 		return(
-			<div>
-				{
-					this.props.children
-				}
-			</div>
+			<div>{this.props.children}</div>
 		)
 	}
 }
 
-export default Products;
+export default IdleMonitor;

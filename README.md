@@ -5,6 +5,15 @@ This is an ecommerce site, where you can buy all sorts of ascii faces like `(ノ
 
 Please read the instructions and FAQ below before beginning.
 
+DEV NOTES
+----
+- Currently showing 50 products per page.
+- You can change default product fetch size from `./client/components/Products/Action.js`, Please build the project again by `npm run create`
+- You can change Advertisement Display Frequency  from `./client/components/Products/Index.js`, Please build the project again by `npm run create`
+- Advertisements are unique, images might repeat for certain numbers (e.g. Advertisement no. 151 and 152 could have same image).
+
+######Assignment by Danish Umair Ahmad - (danishuahmad@gmail.com) for the position of React.js Developer
+
 Features
 ----
 

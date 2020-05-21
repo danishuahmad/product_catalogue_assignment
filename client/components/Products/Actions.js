@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const PRODUCTS_LIMIT = 100;
+//	PLEASE CHANGE
+const PRODUCTS_LIMIT = 50;
 
 export const getProducts = (current_page,sort_by) => {
 	//	parse params to be sent
@@ -15,7 +16,7 @@ export const getProducts = (current_page,sort_by) => {
 	return axios.get('http://localhost:3000/api/products', {params})
 		.then(function (response) {	//	success
 			let end_of_content = false;
-			if( response.data.length === 0 ){
+			if( response.data.length === 0 ){	//	no more products -> mark as end to stop further requests
 				end_of_content = true;
 			}
 			return {success:true,products: response.data, end_of_content};
